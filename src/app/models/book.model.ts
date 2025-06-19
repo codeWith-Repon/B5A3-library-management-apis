@@ -1,0 +1,55 @@
+import { model, Schema } from "mongoose";
+import { IBook } from "../interfaces/book.interface";
+
+
+const bookSchema = new Schema<IBook>({
+    title: {
+        type: String,
+        required: [true, "title is required"],
+        trim: true
+    },
+    author: {
+        type: String,
+        required: [true, "author is required"],
+    },
+    genre: {
+        type: String,
+        enum: {
+            values: [
+                "FICTION",
+                "NON_FICTION",
+                "SCIENCE",
+                "HISTORY",
+                "BIOGRAPHY",
+                "FANTASY"
+            ],
+            message: "{VALUE} is not supported"
+        },
+        required: [true, "genre is required"],
+        trim: true
+    },
+    isbn: {
+        type: String,
+        unique: [true, "isbn must be nuiqe. {VALUE} already taken"],
+        required: [true, "isbn is required"]
+    },
+    description: {
+        type: String
+    },
+    copies: {
+        type: Number,
+        required: [true, "copies is required"],
+        min: [0, "copies cannot be negative"]
+    },
+    available: {
+        type: Boolean,
+        default: true
+    },
+}, {
+    versionKey: false,
+    timestamps: true
+}
+)
+
+const Book = model<IBook>("Book", bookSchema)
+export default Book
