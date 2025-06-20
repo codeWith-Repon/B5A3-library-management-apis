@@ -1,6 +1,7 @@
 import express, { Application, Request, Response } from 'express'
 import cors from 'cors'
 import bookRouter from './app/routes/book.router'
+import errorHandler from './app/middlewares/errorHandler.middleware'
 
 export const app: Application = express()
 app.use(cors())
@@ -12,5 +13,6 @@ app.get('/', (req: Request, res: Response) => {
     res.end("Welcome to library management")
 })
 
+app.use(errorHandler)
 
 export default app

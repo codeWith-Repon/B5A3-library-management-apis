@@ -30,7 +30,7 @@ const bookSchema = new Schema<IBook>({
     },
     isbn: {
         type: String,
-        unique: [true, "isbn must be nuiqe. {VALUE} already taken"],
+        unique: [true, "isbn must be nuiqe"],
         required: [true, "isbn is required"]
     },
     description: {
