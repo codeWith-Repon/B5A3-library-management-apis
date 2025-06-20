@@ -1,8 +1,9 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import Book from "../models/book.model";
-import mongoose from "mongoose";
+import { SortOrder } from "mongoose";
 
-const registerBook = async (req: Request, res: Response) => {
+
+const registerBook = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const payload = req.body
 
@@ -15,41 +16,114 @@ const registerBook = async (req: Request, res: Response) => {
             "data": data
         })
     } catch (error: any) {
+        next(error)
+    }
+};
 
-        if (error instanceof mongoose.Error.ValidationError) {
-            const formatteErrors: any = {}
+const getAllBooks = async (req: Request, res: Response, next: NextFunction) => {
+    try {
 
-            for (const field in error.errors) {
-                const err = error.errors[field]
-                if (err.name === 'ValidatorError')
-                    formatteErrors[field] = {
-                        message: err.message,
-                        name: err.name,
-                        properties: err.properties,
-                        kind: err.kind,
-                        path: err.path,
-                        value: err.value
-                    }
-            }
+        const genre = req.query.filter
+        const sortBy = req.query.sortBy
+        const sortOrder = req.query.sort
+        const limit = Number(req.query.limit) || 10
 
-            return res.status(400).json({
-                "message": "Validation failed",
-                "success": false,
-                error: {
-                    name: error.name,
-                    errors: formatteErrors
-                }
+        const filterBygenre = genre ? { genre: genre } : {}
+
+        const sortByCondition: { [key: string]: SortOrder; } = sortBy ? { [String(sortBy)]: sortOrder === "asc" ? "asc" : "desc" } : {}
+
+        const data = await Book.find(filterBygenre).sort(sortByCondition).limit(limit)
+
+        res.status(200).json({
+            "success": true,
+            "message": "Books retrieved successfully",
+            "data": data
+        })
+
+    } catch (error) {
+        next(error)
+    }
+}
+
+const getBookById = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { bookId } = req.params
+        const data = await Book.findById(bookId)
+
+        if (!data)
+            res.status(404).json({
+                success: false,
+                message: "Book not found",
+                data: null
             })
+        return
+
+        res.status(200).json({
+            "success": true,
+            "message": "Book retrieved successfully",
+            "data": data
+        })
+
+    } catch (error) {
+        next(error)
+    }
+}
+
+const updateBook = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { bookId } = req.params
+        const payload = req.body
+
+        const data = await Book.findByIdAndUpdate(bookId, payload, { new: true })
+
+        if (!data) {
+            res.status(404).json({
+                success: false,
+                message: "Book not found",
+                data: null,
+            });
+            return
         }
 
-        res.status(500).json({
-            message: "Internal Server Error",
-            success: false,
-            error: error.message || error,
-        });
+        res.status(200).json({
+            "success": true,
+            "message": "Book updated successfully",
+            "data": data
+        })
+    } catch (error) {
+        next(error)
+    }
+}
+
+const deleteBook = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { bookId } = req.params
+
+        const data = await Book.findByIdAndDelete(bookId)
+
+        if (!data) {
+            res.status(404).json({
+                success: false,
+                message: "Book not found",
+                data: null,
+            });
+            return
+        }
+
+        res.status(200).json({
+            "success": true,
+            "message": "Book deleted successfully",
+            "data": null
+        })
+    } catch (error) {
+        next(error)
     }
 }
 
 export {
-    registerBook
+    registerBook,
+    getAllBooks,
+    getBookById,
+    updateBook,
+    deleteBook
 }
