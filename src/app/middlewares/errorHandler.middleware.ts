@@ -2,7 +2,7 @@
 import { Request, Response, NextFunction, ErrorRequestHandler } from "express";
 import mongoose from "mongoose";
 
-const errorHandler:ErrorRequestHandler  = (error: any, req: Request, res: Response, next: NextFunction) => {
+const errorHandler = (error: any, req: Request, res: Response, next: NextFunction) => {
     if (error instanceof mongoose.Error.ValidationError) {
         const formatteErrors: any = {}
 
@@ -21,7 +21,7 @@ const errorHandler:ErrorRequestHandler  = (error: any, req: Request, res: Respon
             }
         }
 
-        return res.status(400).json({
+        res.status(400).json({
             message: "Validation failed",
             success: false,
             error: {
@@ -36,6 +36,8 @@ const errorHandler:ErrorRequestHandler  = (error: any, req: Request, res: Respon
         success: false,
         error: error.message || error
     })
+
+    return
 }
 
 export default errorHandler
