@@ -5,5 +5,9 @@ export interface IBook {
     isbn: string,
     description?: string,
     copies: number,
-    available?: boolean,    
+    available?: boolean,
+}
+
+export interface IBookDocument extends IBook, Document {
+  borrow(quantity: number): Promise<IBookDocument>;
 }

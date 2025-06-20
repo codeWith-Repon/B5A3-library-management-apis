@@ -50,13 +50,14 @@ const getBookById = async (req: Request, res: Response, next: NextFunction) => {
         const { bookId } = req.params
         const data = await Book.findById(bookId)
 
-        if (!data)
+        if (!data) {
             res.status(404).json({
                 success: false,
                 message: "Book not found",
                 data: null
             })
-        return
+            return
+        }
 
         res.status(200).json({
             "success": true,
