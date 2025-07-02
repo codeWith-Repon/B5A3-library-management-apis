@@ -30,7 +30,7 @@ const getAllBooks = async (req: Request, res: Response, next: NextFunction) => {
 
         const filterBygenre = genre ? { genre: genre } : {}
 
-        const sortByCondition: { [key: string]: SortOrder; } = sortBy ? { [String(sortBy)]: sortOrder === "asc" ? "asc" : "desc" } : {}
+        const sortByCondition: { [key: string]: SortOrder; } = sortBy ? { [String(sortBy)]: sortOrder === "asc" ? "asc" : "desc" } : { createdAt: "desc" };
 
         const data = await Book.find(filterBygenre).sort(sortByCondition).limit(limit)
 
