@@ -27,17 +27,25 @@ const getAllBooks = async (req: Request, res: Response, next: NextFunction) => {
         const sortBy = req.query.sortBy
         const sortOrder = req.query.sort
         const limit = Number(req.query.limit) || 10
+        const page = Number(req.query.page) || 1
+        const skip = (page -1) * limit
 
         const filterBygenre = genre ? { genre: genre } : {}
 
         const sortByCondition: { [key: string]: SortOrder; } = sortBy ? { [String(sortBy)]: sortOrder === "asc" ? "asc" : "desc" } : { createdAt: "desc" };
 
-        const data = await Book.find(filterBygenre).sort(sortByCondition).limit(limit)
+        const data = await Book.find(filterBygenre).sort(sortByCondition).limit(limit).skip(skip).limit(limit)
 
+        const total = await Book.countDocuments(filterBygenre)
         res.status(200).json({
             "success": true,
             "message": "Books retrieved successfully",
-            "data": data
+            "data": data,
+            "meta": {
+                total,
+                page,
+                limit
+            }
         })
 
     } catch (error) {
