@@ -6,7 +6,7 @@ import borrowBooksRouter from './app/routes/borrowBooks.router'
 
 export const app: Application = express()
 app.use(cors({
-    origin: ["http://localhost:5173", "https://library-client-alpha.vercel.app"]
+    origin: ["http://localhost:5173", "https://library-client-omega.vercel.app"]
 }))
 app.use(express.json())
 
