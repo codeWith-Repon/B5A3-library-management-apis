@@ -19,7 +19,7 @@ const borrowBook = async (req: Request, res: Response, next: NextFunction) => {
         if (getBook.copies < quantity) {
             res.status(400).json({
                 success: false,
-                message: "Not enough copies available",
+                message: `Not enough stock. Stock: ${getBook.copies}`,
             });
             return
         }
