@@ -5,7 +5,9 @@ import errorHandler from './app/middlewares/errorHandler.middleware'
 import borrowBooksRouter from './app/routes/borrowBooks.router'
 
 export const app: Application = express()
-app.use(cors())
+app.use(cors({
+    origin: ["http://localhost:5173", "https://library-client-alpha.vercel.app"]
+}))
 app.use(express.json())
 
 app.use("/api/books", bookRouter);
